@@ -9,7 +9,7 @@ const app = express();
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "https://my-box-final-project.netlify.app/"
+    "https://my-box-final-project.netlify.app"
   );
   // res.setHeader(
   //   "Access-Control-Allow-Origin",
