@@ -22,6 +22,7 @@ const itemSchema = new mongoose.Schema({
   properties: {
     type: Object,
     required: [true, "An item must have properties!"],
+    default: {},
   },
   created_time: {
     type: Date,
