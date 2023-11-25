@@ -8,12 +8,33 @@ const router = express.Router();
 
 const getAllCollections = async (req, res, next) => {
   try {
-    const collections = await Collectionn.find();
+    let query = req.query.user_id
+      ? {
+          "author.id": req.query.user_id,
+        }
+      : {};
+
+    const collections = await Collectionn.find(query);
+
+    const newCollections = await Promise.all(
+      collections.map(async (el) => {
+        const author = await User.findById(el._doc.author.id).exec();
+
+        return {
+          ...el._doc,
+          author: {
+            id: author._id,
+            firstName: author.firstName,
+            lastName: author.lastName,
+          },
+        };
+      })
+    );
 
     res.status(200).json({
       status: "success",
-      collections: collections,
-      length: collections.length,
+      collections: newCollections,
+      length: newCollections.length,
     });
   } catch (error) {
     res.status(500).json({
