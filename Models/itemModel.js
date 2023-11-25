@@ -24,7 +24,7 @@ const itemSchema = new mongoose.Schema({
     required: [true, "An item must have properties!"],
   },
   created_time: {
-    type: String,
+    type: Date,
     required: [true, "An item must have created time"],
   },
   likes: {
