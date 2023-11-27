@@ -34,7 +34,10 @@ const searchUser = async (req, res, next) => {
       $or: fields
         .filter(
           (field) =>
-            !field.startsWith("_") && field !== "__v" && field !== "_id"
+            !field.startsWith("_") &&
+            field !== "__v" &&
+            field !== "_id" &&
+            field !== "password"
         )
         .map((field) => ({ [field]: { $regex: new RegExp(searchTerm, "i") } })),
     };
