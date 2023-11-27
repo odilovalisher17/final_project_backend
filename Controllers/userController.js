@@ -27,19 +27,20 @@ const searchUser = async (req, res, next) => {
     const searchTerm = req.body.text;
 
     // Get the model's schema and extract the field names
-    let fields = Object.keys(User.schema.paths);
-
-    fields = fields.filter((f) => f !== "_id" || f !== "__v");
+    const fields = Object.keys(User.schema.paths);
 
     // Build a query dynamically
-    const query = {};
-    fields.forEach((field) => {
-      query[field] = new RegExp(searchTerm, "i");
-    });
+    const query = {
+      $or: fields
+        .filter(
+          (field) =>
+            !field.startsWith("_") && field !== "__v" && field !== "_id"
+        )
+        .map((field) => ({ [field]: { $regex: new RegExp(searchTerm, "i") } })),
+    };
 
     const user = await User.find(query).select("-password").exec();
-    console.log("Text 🧇" + req.body.text);
-    console.log("Query 🥙" + query);
+
     if (user.length === 0) {
       res.status(404).json({
         status: "fail",
@@ -53,7 +54,6 @@ const searchUser = async (req, res, next) => {
       user: user,
     });
   } catch (error) {
-    console.log("🥩", error);
     res.status(404).json({
       status: "fail",
       message: error,
