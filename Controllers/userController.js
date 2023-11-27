@@ -42,7 +42,18 @@ const searchUser = async (req, res, next) => {
         .map((field) => ({ [field]: { $regex: new RegExp(searchTerm, "i") } })),
     };
 
-    const user = await User.find(query).select("-password").exec();
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 20;
+    const skip = (page - 1) * limit;
+
+    const user = await User.find(query)
+      .skip(skip)
+      .limit(limit)
+      .select("-password")
+      .exec();
+
+    const totalUsers = await User.countDocuments(query);
+    const totalPages = Math.ceil(totalUsers / limit);
 
     if (user.length === 0) {
       res.status(404).json({
@@ -55,6 +66,10 @@ const searchUser = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       user: user,
+      pageInfo: {
+        currentPage: page,
+        totalPages: totalPages,
+      },
     });
   } catch (error) {
     res.status(404).json({
