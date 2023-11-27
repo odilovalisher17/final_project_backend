@@ -1,6 +1,7 @@
 const User = require("../Models/userModel");
 const Item = require("../Models/itemModel");
 const express = require("express");
+const Collectionn = require("../Models/collectionModel");
 
 const router = express.Router();
 // router.param('id', checkId);
@@ -147,6 +148,25 @@ const updateUser = async (req, res, next) => {
 const deleteUser = async (req, res, next) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
+    await Collectionn.deleteMany({ "author.id": req.params.id });
+    await Item.deleteMany({ "author.id": req.params.id });
+
+    const userCommentsItems = await Item.find({});
+
+    await Promise.all(
+      userCommentsItems.map(async (el) => {
+        const newCommnets = el._doc.comments.filter(
+          (c) => c.user.id !== req.params.id
+        );
+
+        const newLikes = el._doc.likes.filter((l) => l !== req.params.id);
+
+        await Item.findByIdAndUpdate(el._doc._id, {
+          comments: newCommnets,
+          likes: newLikes,
+        });
+      })
+    );
 
     if (!user) {
       res.status(404).json({

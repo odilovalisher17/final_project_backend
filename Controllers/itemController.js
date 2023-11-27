@@ -14,7 +14,7 @@ const getAllItems = async (req, res, next) => {
         }
       : {};
 
-    const items = await Item.find(query);
+    const items = await Item.find({});
 
     const newItems = await Promise.all(
       items.map(async (el) => {
