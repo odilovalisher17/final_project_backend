@@ -24,7 +24,7 @@ const getAllUsers = async (req, res, next) => {
 
 const searchUser = async (req, res, next) => {
   try {
-    const searchTerm = req.body.text;
+    const searchTerm = req.query.text;
 
     // Get the model's schema and extract the field names
     const fields = Object.keys(User.schema.paths);
