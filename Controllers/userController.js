@@ -22,6 +22,43 @@ const getAllUsers = async (req, res, next) => {
   }
 };
 
+const searchUser = async (req, res, next) => {
+  try {
+    const searchTerm = req.body.text;
+
+    // Get the model's schema and extract the field names
+    let fields = Object.keys(YourModel.schema.paths);
+
+    fields = fields.filter((f) => f !== "_id" || f !== "__v");
+
+    // Build a query dynamically
+    const query = {};
+    fields.forEach((field) => {
+      query[field] = new RegExp(searchTerm, "i");
+    });
+
+    const user = await User.find(query).select("-password").exec();
+
+    if (user.length === 0) {
+      res.status(404).json({
+        status: "fail",
+        message: "Could not find a user",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      status: "success",
+      user: user,
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: "fail",
+      message: "Invalid email",
+    });
+  }
+};
+
 const getUser = async (req, res, next) => {
   try {
     const user = await User.findOne(req.query).select("-password").exec();
@@ -115,5 +152,6 @@ router.route("/getAllUsers").get(getAllUsers);
 router.route("/addUser").post(addUser);
 router.route("/user/:id").put(updateUser).delete(deleteUser);
 router.route("/user").get(getUser);
+router.route("/searchUser").get(searchUser);
 
 module.exports = router;
