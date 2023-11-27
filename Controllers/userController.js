@@ -38,7 +38,8 @@ const searchUser = async (req, res, next) => {
     });
 
     const user = await User.find(query).select("-password").exec();
-
+    console.log("Text 🧇" + req.body.text);
+    console.log("Query 🥙" + query);
     if (user.length === 0) {
       res.status(404).json({
         status: "fail",
@@ -52,6 +53,7 @@ const searchUser = async (req, res, next) => {
       user: user,
     });
   } catch (error) {
+    console.log("🥩", error);
     res.status(404).json({
       status: "fail",
       message: error,
