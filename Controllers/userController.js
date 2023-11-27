@@ -27,7 +27,7 @@ const searchUser = async (req, res, next) => {
     const searchTerm = req.body.text;
 
     // Get the model's schema and extract the field names
-    let fields = Object.keys(YourModel.schema.paths);
+    let fields = Object.keys(User.schema.paths);
 
     fields = fields.filter((f) => f !== "_id" || f !== "__v");
 
