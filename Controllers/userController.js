@@ -54,7 +54,7 @@ const searchUser = async (req, res, next) => {
   } catch (error) {
     res.status(404).json({
       status: "fail",
-      message: "Invalid email",
+      message: error,
     });
   }
 };
